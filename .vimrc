@@ -10,7 +10,7 @@
 " These options and commands enable some very useful features in Vim, that
 " no user should have to live without.
  
-" Set 'nocompatible' to ward off unexpected things that your distro might
+" Set 'nocompatible' to ward off unexpected things that your distribution might
 " have made, as well as sanely reset options when re-sourcing .vimrc
 set nocompatible
  
@@ -145,7 +145,7 @@ set list
 set listchars=tab:\|\ 
 
 " Display vertical and horizontal lines over cursor
-set cursorcolumn 
+" set cursorcolumn 
 set cursorline 
 
 " Try to keep a margin from the cursor to the file top and bottom:
@@ -222,7 +222,13 @@ Plug 'tpope/vim-commentary' " Comment stuff out
 Plug 'Yggdroot/indentLine' " Visually display indent levels.
 Plug 'michaeljsmith/vim-indent-object' " Select a block with same indentation.
 Plug 'vim-airline/vim-airline' " Status line (tab line)
-Plug 'neoclide/coc.nvim', {'branch':'release'} "Conquer of Completion
+Plug 'neoclide/coc.nvim', {'branch':'release'} " Conquer of Completion
+Plug 'tpope/vim-fugitive' " Use git inside vim!
+" Plug 'ctrlpvim/ctrlp.vim' " Fuzzy file, buffer, mru, rag, etc finder.
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " Command-line fuzzy finder
+Plug 'junegunn/fzf.vim'
+Plug 'ryanoasis/vim-devicons' " Icons for NERDTree.
+Plug 'airblade/vim-gitgutter' " Shows git diff markers in the sign column.
 call plug#end()
 
 "------------------------------ Syntastic -------------------------------------
@@ -241,6 +247,19 @@ let g:syntastic_python_checkers = ['pylint', 'python', 'flake8', 'pyflakes']
 let g:indentLine_color_term = 2
 
 "---------------------- Conquers of Completion (CoC) --------------------------
+" I had to manually install each CoC extension using 'npm install <extension>'
+"	npm install coc-tsserver (for javascript and typescript)
+"	npm install coc-vimlsp (for vim language)
+"	npm install coc-eslint (lint javascript files)
+"	npm install coc-spell-checker
+"	npm install coc-snippets (create custom snippets to insert patterns)
+"	npm install coc-python 
+"	npm install coc-markdownlint
+"	npm install coc-json
+"	npm install coc-html
+"	npm install coc-css (for css, scss and less)
+"	npm install coc-clangd (for C/C++/Objective-C)
+"
 " TextEdit might fail if hidden is not set.
 set hidden
 
@@ -382,3 +401,17 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
+"------------------------------ vim-devicons ----------------------------------
+" Download the font DeJaVuSansMono Nerd Font, place it in ~/.local/share/fonts
+set encoding=UTF-8
+let g:airline_powerline_fonts = 1
+set guifont=DejaVuSansMono\ Nerd\ Font\ Bold\ 9
+
+"---------------------------------- CtrlP -------------------------------------
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+
+"---------------------------------- fzf ---------------------------------------
+map <C-f> <Esc><Esc>:Files!<CR>
+inoremap <C-f> <Esc><Esc>:BLines!<CR>
+map <C-g> <Esc><Esc>:BCommits!<CR>
