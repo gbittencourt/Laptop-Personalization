@@ -48,7 +48,7 @@
 	augroup END
 	
 	" Nice colors from mozao
-	colorscheme slate 
+	" colorscheme slate 
 	
 	" Show file name at the top
 	set title
@@ -58,25 +58,6 @@
 	
 	" Try to always keep the cursor at the middle of the file
 	set scrolloff=999
-	set lazyredraw " avoid update the screen before command is complete
-	nnoremap <C-B> 22kzz
-	nnoremap <C-U> 11kzz
-	nnoremap H 22kzz
-	nnoremap { {zz
-	nnoremap k kzz
-	nnoremap # #zz
-	nnoremap N Nzz
-	nnoremap j jzz
-	nnoremap } }zz
-	nnoremap L 22jzz
-	nnoremap <C-D> 11jzz
-	" nnoremap <C-F> 22jzz " This is mapped to the fzf plugin
-	nnoremap n nzz
-	nnoremap * *zz
-	nnoremap G Gzz
-	nnoremap '. '.zz
-	nnoremap '' ''zz
-	nnoremap % %zz
 	
 	" Display horizontal line over cursor
 	set cursorline 
@@ -178,11 +159,28 @@
 	" Allow backspacing over autoindent, line breaks and start of insert action
 	set backspace=indent,eol,start
 
-	" Keep the cursor at the middle of the file when possible
-	nnoremap j jzz
-	nnoremap k kzz
-" }}}
-" Usability options {{{
+	" The following mappings are not working when NERDTree is opened:
+		" " Try to always keep the cursor at the middle of the file
+		" set lazyredraw " avoid update the screen before command is complete
+		" nnoremap <C-B> 22kzz
+		" nnoremap <C-U> 11kzz
+		" nnoremap H 22kzz
+		" nnoremap { {zz
+		" nnoremap k kzz
+		" nnoremap # #zz
+		" nnoremap N Nzz
+		" nnoremap j jzz
+		" nnoremap } }zz
+		" nnoremap L 22jzz
+		" nnoremap <C-D> 11jzz
+		" " nnoremap <C-F> 22jzz " This is mapped to the fzf plugin
+		" nnoremap n nzz
+		" nnoremap * *zz
+		" nnoremap G Gzz
+		" nnoremap '. '.zz
+		" nnoremap '' ''zz
+		" nnoremap % %zz
+		" nnoremap dd ddzz
 " }}}
 " Plugins {{{
 	" vim-plug {{{
@@ -198,10 +196,11 @@
 		" Run ':PlugUpgrade' and ':PlugUpdate' whenever you want
 		" To remove a plugin, remove from this list, save and run ':PlugClean'
 		call plug#begin('~/.vim/plugged')
-		Plug 'junegunn/vim-plug' "vim-plug itself, to enable its Vim help.
+		Plug 'junegunn/vim-plug' " Vim-plug itself, to enable its Vim help.
+		Plug 'morhetz/gruvbox' " Beautiful colors =]
 		Plug 'jiangmiao/auto-pairs' " Create the closing bracket automatically {}[]()
 		Plug 'preservim/nerdtree' " Tree explorer
-		Plug 'scrooloose/syntastic' " Correct syntax error automatically when saving.
+		" Plug 'scrooloose/syntastic' " Correct syntax error automatically when saving.
 		Plug 'tpope/vim-surround' " Delete, change, add surroundings easily.
 		Plug 'tpope/vim-commentary' " Comment stuff out
 		Plug 'Yggdroot/indentLine' " Visually display indent levels.
@@ -209,24 +208,30 @@
 		Plug 'vim-airline/vim-airline' " Status line (tab line)
 		Plug 'neoclide/coc.nvim', {'branch':'release'} " Conquer of Completion
 		Plug 'tpope/vim-fugitive' " Use git inside vim!
-		" Plug 'ctrlpvim/ctrlp.vim' " Fuzzy file, buffer, mru, rag, etc finder.
 		Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " Command-line fuzzy finder
 		Plug 'junegunn/fzf.vim'
 		Plug 'ryanoasis/vim-devicons' " Icons for NERDTree.
 		Plug 'airblade/vim-gitgutter' " Shows git diff markers in the sign column.
 		call plug#end()
 	" }}}
-	" syntastic {{{
-		set statusline+=%#warningmsg#
-		set statusline+=%{SyntasticStatuslineFlag()}
-		set statusline+=%*
-		let g:syntastic_always_populate_loc_list = 1
-		let g:syntastic_auto_loc_list = 1
-		let g:syntastic_check_on_open = 1
-		let g:syntastic_check_on_wq = 1
-		let g:syntastic_html_checkers=['validator', 'w3']
-		let g:syntastic_python_checkers = ['pylint', 'python', 'flake8', 'pyflakes']
-	" }}}
+	" gruvbox {{{
+		" Correct colors due to xfce terminal
+		set termguicolors
+		let g:gruvbox_contrast_dark='hard'
+		set background=dark
+		colorscheme gruvbox
+		" }}}
+	" " syntastic {{{
+	" 	set statusline+=%#warningmsg#
+	" 	set statusline+=%{SyntasticStatuslineFlag()}
+	" 	set statusline+=%*
+	" 	let g:syntastic_always_populate_loc_list = 1
+	" 	let g:syntastic_auto_loc_list = 1
+	" 	let g:syntastic_check_on_open = 1
+	" 	let g:syntastic_check_on_wq = 1
+	" 	let g:syntastic_html_checkers=['validator', 'w3']
+	" 	let g:syntastic_python_checkers = ['pylint', 'python', 'flake8', 'pyflakes']
+	" " }}}
 	" indentLine {{{
 		let g:indentLine_color_term = 2
 	" }}}
@@ -243,16 +248,10 @@
 		"	npm install coc-html
 		"	npm install coc-css (for css, scss and less)
 		"	npm install coc-clangd (for C/C++/Objective-C)
-		"
-		" TextEdit might fail if hidden is not set.
-		set hidden
 
 		" Some servers have issues with backup files, see #649.
 		set nobackup
 		set nowritebackup
-
-		" Give more space for displaying messages.
-		set cmdheight=2
 
 		" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 		" delays and poor user experience.
@@ -279,7 +278,7 @@
 		  return !col || getline('.')[col - 1]  =~# '\s'
 		endfunction
 
-		" Use <c-space> to trigger completion.
+		" Use <c-space> to trigger completion. NOT WORKING!!!!!!!!!!!!!!!!!!!!
 		inoremap <silent><expr> <c-space> coc#refresh()
 
 		" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
@@ -392,7 +391,7 @@
 		set guifont=DejaVuSansMono\ Nerd\ Font\ Bold\ 9
 	" }}}
 	" fzf {{{
-	map <C-f> <Esc><Esc>:Files!<CR>
-	inoremap <C-f> <Esc><Esc>:BLines!<CR>
-	map <C-g> <Esc><Esc>:BCommits!<CR>
+		map <C-f> <Esc><Esc>:Files!<CR>
+		inoremap <C-f> <Esc><Esc>:BLines!<CR>
+		map <C-g> <Esc><Esc>:BCommits!<CR>
 	" }}}
