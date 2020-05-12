@@ -30,6 +30,12 @@
 	
 	" Quickly time out on keycodes, but never time out on mappings
 	set notimeout ttimeout ttimeoutlen=100
+
+	" Allow saving files as sudo when I forgot to start vim using sudo
+	" http://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work
+	if has("unix")
+		cmap w!! w !sudo tee > /dev/null %
+	endif
 " }}}
 " Display {{{
 	" Show partial commands in the bottom right of the screen. 
@@ -244,6 +250,7 @@
 		Plug 'tpope/vim-repeat' " Remaps '.' in a way that works with plugins
 		Plug 'vim-scripts/CursorLineCurrentWindow' " Remove the cursorline from inactive windows
 		Plug 'mattn/emmet-vim' " Expand HTML abbreviations
+		Plug 'prettier/vim-prettier', {'do': 'yarn install' } " Make code prettier =]
 		call plug#end()
 	" }}}
 	" gruvbox {{{
@@ -339,6 +346,7 @@
 		\ 'coc-html',
 		\ 'coc-css',
 		\ 'coc-clangd',
+		\ 'coc-emmet',
 		\ ]
 		
 		" Some servers have issues with backup files, see #649.
@@ -505,5 +513,10 @@
 		" To remap the default <C-Y> leader:
 		" let g:user_emmet_leader_key='<C-Z>'
 		" Note that the trailing , still needs to be entered after <C-Z>
+	" }}}
+	" vim-prettier {{{
+		" prettier encountered an error during instalation (I think node/yarn
+		" related), so I had to manually run 'npm install' inside the
+		" vim-prettier directory, and it started working.
 	" }}}
 " }}} 
