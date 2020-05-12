@@ -47,9 +47,6 @@
 	  autocmd BufLeave,FocusLost,InsertEnter,WinEnter   * if &nu | set nornu | endif
 	augroup END
 	
-	" Nice colors from mozao
-	" colorscheme slate 
-	
 	" Show file name at the top
 	set title
 	
@@ -72,7 +69,12 @@
 	set foldnestmax=10
 	set foldmethod=indent
 	
-" }}}
+	" Set proper comment highlighting in json files.
+	autocmd FileType json syntax match Comment +\/\/.\+$+
+	
+	" Don't wrap lines
+	set nowrap
+	"" }}}
 " Autocompletion and Spelling {{{
 	" Attempt to determine the type of a file based on its name and possibly its
 	" contents. Use this to allow intelligent auto-indenting for each filetype,
@@ -109,7 +111,29 @@
 	" same window as mentioned above, and/or either of the following options:
 	" set confirm
 	" set autowriteall
-" }}}
+	
+	" Do not equalize sizes after window is closed or splitted
+	" set noequalalways 
+	
+	" Open splits on the right and below
+	set splitbelow
+	set splitright
+
+	" " Map the leader to change window focus
+	" noremap <silent> <leader>h <C-W><C-H>
+	" noremap <silent> <leader>j <C-W><C-J>
+	" noremap <silent> <leader>k <C-W><C-K>
+	" noremap <silent> <leader>l <C-W><C-L>
+
+	" Map the leader arrows to resize the current window
+	nnoremap <silent> <leader><Left> :exe "vertical resize " . (winwidth(0) * 95/100)<CR>
+	nnoremap <silent> <leader><Down> :exe "resize " . (winheight(0) * 90/100)<CR>
+	nnoremap <silent> <leader><Up> :exe "resize " . (winheight(0) * 120/100)<CR>
+	nnoremap <silent> <leader><Right> :exe "vertical resize " . (winwidth(0) * 110/100)<CR>
+
+	" Automatically resize splits when resizing window
+	autocmd VimResized * wincmd = 
+	" }}}
 " Search {{{
 	" Highlight searches (use <C-L> to temporarily turn off highlighting)
 	set hlsearch
@@ -150,6 +174,9 @@
 	" which is the default
 	map Y y$
 	
+	" Remap the <leader> to be the space " " instead of the default "\"
+	map <space> <leader>
+
 	" Map <C-n> to open NERDTree
 	noremap <C-N> :NERDTreeToggle<Enter>
 	
@@ -198,9 +225,11 @@
 		call plug#begin('~/.vim/plugged')
 		Plug 'junegunn/vim-plug' " Vim-plug itself, to enable its Vim help.
 		Plug 'morhetz/gruvbox' " Beautiful colors =]
-		Plug 'jiangmiao/auto-pairs' " Create the closing bracket automatically {}[]()
 		Plug 'preservim/nerdtree' " Tree explorer
-		" Plug 'scrooloose/syntastic' " Correct syntax error automatically when saving.
+		Plug 'Xuyuanp/nerdtree-git-plugin' " Show file status on NERDTree
+		Plug 'ryanoasis/vim-devicons' " Icons for NERDTree.
+		Plug 'jiangmiao/auto-pairs' " Create the closing bracket automatically {}[]()
+		Plug 'scrooloose/syntastic' " Correct syntax error automatically when saving.
 		Plug 'tpope/vim-surround' " Delete, change, add surroundings easily.
 		Plug 'tpope/vim-commentary' " Comment stuff out
 		Plug 'Yggdroot/indentLine' " Visually display indent levels.
@@ -210,8 +239,11 @@
 		Plug 'tpope/vim-fugitive' " Use git inside vim!
 		Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " Command-line fuzzy finder
 		Plug 'junegunn/fzf.vim'
-		Plug 'ryanoasis/vim-devicons' " Icons for NERDTree.
 		Plug 'airblade/vim-gitgutter' " Shows git diff markers in the sign column.
+		Plug 'wesQ3/vim-windowswap' " Swap windows without ruining layout
+		Plug 'tpope/vim-repeat' " Remaps '.' in a way that works with plugins
+		Plug 'vim-scripts/CursorLineCurrentWindow' " Remove the cursorline from inactive windows
+		Plug 'mattn/emmet-vim' " Expand HTML abbreviations
 		call plug#end()
 	" }}}
 	" gruvbox {{{
@@ -221,19 +253,61 @@
 		set background=dark
 		colorscheme gruvbox
 		" }}}
-	" " syntastic {{{
-	" 	set statusline+=%#warningmsg#
-	" 	set statusline+=%{SyntasticStatuslineFlag()}
-	" 	set statusline+=%*
-	" 	let g:syntastic_always_populate_loc_list = 1
-	" 	let g:syntastic_auto_loc_list = 1
-	" 	let g:syntastic_check_on_open = 1
-	" 	let g:syntastic_check_on_wq = 1
-	" 	let g:syntastic_html_checkers=['validator', 'w3']
-	" 	let g:syntastic_python_checkers = ['pylint', 'python', 'flake8', 'pyflakes']
-	" " }}}
+	" nerdtree {{{
+		" Open NERDTree if no file is given as CLI argument
+		autocmd StdinReadPre * let s:std_in=1
+		autocmd VimEnter * NERDTreeFocus
+
+		" Show hidden files
+		let g:NERDTreeShowHidden = 1
+
+		" Close the tree window automatically after opening a file
+		let g:NERDTreeQuitOnOpen = 3
+		let g:NERDTreeWinSize = 25
+		let g:NERDTreeWinSizeMax = 80
+
+		" Indicate changes in files that have a git version control
+		let g:NERDTreeGitStatusWithFlags=1	
+		let g:WebDevIconsUnicodeDecorateFolderNodes=1
+		let g:NERDTreeGitStatusNodeColorization=1
+
+		" Sync open file with NERDTree
+		function! IsNERDTreeOpen()
+			return exists("t:NERDTreeBufName") && (bufwinnr(t:NERDTreeBufName) != -1)
+		endfunction
+
+		" Call NERDTree iff NERDTree is active, current window contains a 
+		" modifiable file, and we're not in vimdiff
+		function! SyncTree()
+			if &modifiable && IsNERDTreeOpen() && strlen(expand('%')) > 0 && !&diff
+				NERDTreeFind
+				wincmd p
+			endif
+		endfunction
+
+		" Highlight currently open buffer in NERDTree
+		autocmd BufEnter * call SyncTree()
+
+		" Automatically delete the buffer of the file you just deleted with NT
+		let NERDTreeAutoDeleteBuffer = 1
+	" }}}
+	" syntastic {{{
+		set statusline+=%#warningmsg#
+		set statusline+=%{SyntasticStatuslineFlag()}
+		set statusline+=%*
+		let g:syntastic_always_populate_loc_list = 1
+		let g:syntastic_auto_loc_list = 0 " Don't auto open/close location list
+		let g:syntastic_check_on_open = 0
+		let g:syntastic_check_on_wq = 0
+		let g:syntastic_mode="passive"
+		" let g:syntastic_enable_signs=0
+		let g:syntastic_html_checkers=['w3']
+		let g:syntastic_python_checkers = ['pylint', 'python', 'flake8', 'pyflakes']
+		nnoremap <F7> :SyntasticCheck<CR> :lopen<CR>
+	" }}}
 	" indentLine {{{
 		let g:indentLine_color_term = 2
+		let g:indentLine_setConceal = 0
 	" }}}
 	" Conquers of Completion (CoC) {{{ 
 		" I had to manually install each CoC extension using 'npm install <extension>'
@@ -248,7 +322,25 @@
 		"	npm install coc-html
 		"	npm install coc-css (for css, scss and less)
 		"	npm install coc-clangd (for C/C++/Objective-C)
-
+		
+		" Trying to give the path to a newer version of node
+		let g:coc_node_path='~/Downloads/node-v14.2.0-linux-x64/bin/node'
+		
+		" Dically install desired extensions
+		let g:coc_global_extensions = [
+		\ 'coc-tsserver',
+		\ 'coc-vimlsp',
+		\ 'coc-eslint',
+		\ 'coc-spell-checker',
+		\ 'coc-snippets',
+		\ 'coc-python',
+		\ 'coc-markdownlint',
+		\ 'coc-json',
+		\ 'coc-html',
+		\ 'coc-css',
+		\ 'coc-clangd',
+		\ ]
+		
 		" Some servers have issues with backup files, see #649.
 		set nobackup
 		set nowritebackup
@@ -395,3 +487,23 @@
 		inoremap <C-f> <Esc><Esc>:BLines!<CR>
 		map <C-g> <Esc><Esc>:BCommits!<CR>
 	" }}}
+	" vim-windowswap {{{
+		" Instructions: 
+		"	navigate to one window
+		"	press <leader>ww
+		"	navigate to another window
+		"	press <leader>ww
+	" }}}
+	" emmet-vim {{{
+		" Tutorial: position the cursor after the html abbreviation, and press 
+		" (ctrl+Y+,)
+		
+		" Enable just for HTML/CSS
+		let g:user_emmet_install_global=0
+		autocmd FileType html,css EmmetInstall
+
+		" To remap the default <C-Y> leader:
+		" let g:user_emmet_leader_key='<C-Z>'
+		" Note that the trailing , still needs to be entered after <C-Z>
+	" }}}
+" }}} 
