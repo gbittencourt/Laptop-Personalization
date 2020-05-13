@@ -80,6 +80,13 @@
 	
 	" Don't wrap lines
 	set nowrap
+	
+	" Set cursorline only in active window and NERDTree
+	augroup CursorlineOnlyInActiveWindow
+		autocmd!
+		autocmd VimEnter,WinEnter,BufEnter * setlocal cursorline
+		autocmd WinLeave * if &filetype != "nerdtree" | setlocal nocursorline | endif
+	augroup END
 	"" }}}
 " Autocompletion and Spelling {{{
 	" Attempt to determine the type of a file based on its name and possibly its
@@ -156,20 +163,20 @@
 	
 	" How many columns a tab counts for. Affect how existing text will be
 	" displayed.
-	set tabstop=4
+	set tabstop=2
 
 	" expandtab: When hitting TAB in insert mode, automatically produces the 
 	" appropriate number of spaces set in tabstop.
 	set noexpandtab
 
 	" How many columns text is indented with the reindent operations (<< and >>).
-	set shiftwidth=4
+	set shiftwidth=2
 
 	" When expandtab is set, vim will ignore this, and use tabstop value. When is
 	" not set, if softtabstop is less than tabstop, vim will use a combination of
 	" tabs and spaces to make up the desired spacing. When softtabstop equals
 	" tabstop, vim will use only tabs.
-	set softtabstop=4
+	set softtabstop=2
 
 	" Set the representation of whatever key I want
 	set listchars=tab:\|\ 
@@ -181,20 +188,19 @@
 	map Y y$
 	
 	" Remap the <leader> to be the space " " instead of the default "\"
-	map <space> <leader>
+	" map <space> <leader>
 
 	" Map <C-n> to open NERDTree
 	noremap <C-N> :NERDTreeToggle<Enter>
 	
 	" Map <C-J> to insert empty line below current, analogous to <S-J> 
-	nnoremap <C-J> m`o<Esc>0"_D``
+	nnoremap <C-J> m`o<Esc>0"_D`` 
 	
 	" Allow backspacing over autoindent, line breaks and start of insert action
 	set backspace=indent,eol,start
 
 	" The following mappings are not working when NERDTree is opened:
 		" " Try to always keep the cursor at the middle of the file
-		" set lazyredraw " avoid update the screen before command is complete
 		" nnoremap <C-B> 22kzz
 		" nnoremap <C-U> 11kzz
 		" nnoremap H 22kzz
@@ -219,10 +225,10 @@
 	" vim-plug {{{
 		" Automatically install Vim-plug (if notalready installed):
 		if empty(glob('~/.vim/autoload/plug.vim'))
-			  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-				  \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-				autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-			endif
+			silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+				\ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+			autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+		endif
 			
 		" Enter "Plug 'githubUser/repositoryName'", 
 		" Save this file, re-open vim and run ':PlugInstall'
@@ -234,6 +240,7 @@
 		Plug 'preservim/nerdtree' " Tree explorer
 		Plug 'Xuyuanp/nerdtree-git-plugin' " Show file status on NERDTree
 		Plug 'ryanoasis/vim-devicons' " Icons for NERDTree.
+		Plug 'tiagofumo/vim-nerdtree-syntax-highlight' " Colors based on filetype
 		Plug 'jiangmiao/auto-pairs' " Create the closing bracket automatically {}[]()
 		Plug 'scrooloose/syntastic' " Correct syntax error automatically when saving.
 		Plug 'tpope/vim-surround' " Delete, change, add surroundings easily.
@@ -241,6 +248,8 @@
 		Plug 'Yggdroot/indentLine' " Visually display indent levels.
 		Plug 'michaeljsmith/vim-indent-object' " Select a block with same indentation.
 		Plug 'vim-airline/vim-airline' " Status line (tab line)
+		Plug 'enricobacis/vim-airline-clock' " For fullscreen vim sessions
+		Plug 'vim-airline/vim-airline-themes' " Beautiful themes =]
 		Plug 'neoclide/coc.nvim', {'branch':'release'} " Conquer of Completion
 		Plug 'tpope/vim-fugitive' " Use git inside vim!
 		Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " Command-line fuzzy finder
@@ -248,7 +257,7 @@
 		Plug 'airblade/vim-gitgutter' " Shows git diff markers in the sign column.
 		Plug 'wesQ3/vim-windowswap' " Swap windows without ruining layout
 		Plug 'tpope/vim-repeat' " Remaps '.' in a way that works with plugins
-		Plug 'vim-scripts/CursorLineCurrentWindow' " Remove the cursorline from inactive windows
+		Plug 'tpope/vim-obsession' " Continuously updated session files
 		Plug 'mattn/emmet-vim' " Expand HTML abbreviations
 		Plug 'prettier/vim-prettier', {'do': 'yarn install' } " Make code prettier =]
 		call plug#end()
@@ -259,7 +268,22 @@
 		let g:gruvbox_contrast_dark='hard'
 		set background=dark
 		colorscheme gruvbox
-		" }}}
+	" }}}
+	" vim-airline {{{
+		" Display tab line
+		let g:airline#extensions#tabline#enabled = 1 
+		let g:airline#extensions#tabline#left_sep = ' '
+		let g:airline#extensions#tabline#left_alt_sep = '|'
+
+		" vim-airline-theme
+		let g:airline_theme='badwolf' 
+
+		" Integrate with vim-obsession (Prepend a '$' when enabled)
+		function! AirlineInit()
+			let g:airline_section_z = airline#section#create(['%{ObsessionStatus(''$'', '''')}', 'windowswap', '%3p%% ', 'linenr', ':%3v '])
+		endfunction
+		autocmd User AirlineAfterInit call AirlineInit()
+	" }}}
 	" nerdtree {{{
 		" Open NERDTree if no file is given as CLI argument
 		autocmd StdinReadPre * let s:std_in=1
@@ -295,8 +319,36 @@
 		" Highlight currently open buffer in NERDTree
 		autocmd BufEnter * call SyncTree()
 
+		" Always show cursorline in NERDTree
+		let g:NERDTreeHighlightCursorline=1
+
 		" Automatically delete the buffer of the file you just deleted with NT
 		let NERDTreeAutoDeleteBuffer = 1
+
+		" Close vim if NERDTree is the last open window.
+		autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+		" Config specific for NERDTree
+		" augroup nerdtree
+			" autocmd!
+			" autocmd FileType nerdtree syntax clear NERDTreeFlags
+			" other nerdtree related autocmds
+		" augroup END 
+	" }}}
+	" vim-devicons {{{
+		" Download the font DeJaVuSansMono Nerd Font, place it in ~/.local/share/fonts
+		set encoding=UTF-8
+		let g:airline_powerline_fonts = 1
+		set guifont=DejaVuSansMono\ Nerd\ Font\ Bold\ 9
+	" }}}
+	" vim-nerdtree-syntax-highlight {{{
+			" Disable highlighting
+			let g:NERDTreeDisableFileExtensionHighlight = 1
+			let g:NERDTreeDisableExactMatchHighlight = 1
+			let g:NERDTreeDisablePatternMatchHighlight = 1
+			
+			" Reduce number of extensions to check (reduces lag)
+			let g:NERDTreeLimitedSyntax = 1
 	" }}}
 	" syntastic {{{
 		set statusline+=%#warningmsg#
@@ -356,6 +408,9 @@
 		" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 		" delays and poor user experience.
 		set updatetime=300
+		 
+		" avoid update the screen before coc is ready
+		set lazyredraw
 
 		" Don't pass messages to |ins-completion-menu|.
 		set shortmess+=c
@@ -378,8 +433,10 @@
 		  return !col || getline('.')[col - 1]  =~# '\s'
 		endfunction
 
-		" Use <c-space> to trigger completion. NOT WORKING!!!!!!!!!!!!!!!!!!!!
-		inoremap <silent><expr> <c-space> coc#refresh()
+		" Use <c-space> to trigger completion. My terminal sends <NUL> instead of
+		" <c-space>, so...
+		" inoremap <silent><expr> <c-space> coc#refresh()
+		inoremap <silent><expr> <NUL> coc#refresh()
 
 		" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
 		" position. Coc only does snippet and additional edit on confirm.
@@ -421,13 +478,14 @@
 		xmap <leader>f  <Plug>(coc-format-selected)
 		nmap <leader>f  <Plug>(coc-format-selected)
 
-		augroup mygroup
-		  autocmd!
-		  " Setup formatexpr specified filetype(s).
-		  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-		  " Update signature help on jump placeholder.
-		  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-		augroup end
+		" Custom behaviour for specific group of filetypes:
+		" augroup mygroup
+		"   autocmd!
+		"   " Setup formatexpr specified filetype(s).
+		"   autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+		"   " Update signature help on jump placeholder.
+		"   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+		" augroup end
 
 		" Applying codeAction to the selected region.
 		" Example: `<leader>aap` for current paragraph
@@ -461,11 +519,6 @@
 		" Add `:OR` command for organize imports of the current buffer.
 		command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
-		" Add (Neo)Vim's native statusline support.
-		" NOTE: Please see `:h coc-status` for integrations with external plugins that
-		" provide custom statusline: lightline.vim, vim-airline.
-		set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-
 		" Mappings using CoCList:
 		" Show all diagnostics.
 		nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
@@ -484,16 +537,10 @@
 		" Resume latest coc list.
 		nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 	" }}}
-	" vim-devicons {{{
-		" Download the font DeJaVuSansMono Nerd Font, place it in ~/.local/share/fonts
-		set encoding=UTF-8
-		let g:airline_powerline_fonts = 1
-		set guifont=DejaVuSansMono\ Nerd\ Font\ Bold\ 9
-	" }}}
 	" fzf {{{
-		map <C-f> <Esc><Esc>:Files!<CR>
-		inoremap <C-f> <Esc><Esc>:BLines!<CR>
-		map <C-g> <Esc><Esc>:BCommits!<CR>
+		" map <C-f> <Esc><Esc>:Files!<CR>
+		" inoremap <C-f> <Esc><Esc>:BLines!<CR>
+		" map <C-g> <Esc><Esc>:BCommits!<CR>
 	" }}}
 	" vim-windowswap {{{
 		" Instructions: 
@@ -501,6 +548,10 @@
 		"	press <leader>ww
 		"	navigate to another window
 		"	press <leader>ww
+	" }}}
+	" vim-obsession {{{
+		" Start obsession on vim start
+		autocmd VimEnter * Obsession 'Session.vim'
 	" }}}
 	" emmet-vim {{{
 		" Tutorial: position the cursor after the html abbreviation, and press 
@@ -518,5 +569,6 @@
 		" prettier encountered an error during instalation (I think node/yarn
 		" related), so I had to manually run 'npm install' inside the
 		" vim-prettier directory, and it started working.
+		 autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html Prettier
 	" }}}
 " }}} 
