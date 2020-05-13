@@ -240,7 +240,7 @@
 		Plug 'preservim/nerdtree' " Tree explorer
 		Plug 'Xuyuanp/nerdtree-git-plugin' " Show file status on NERDTree
 		Plug 'ryanoasis/vim-devicons' " Icons for NERDTree.
-		Plug 'tiagofumo/vim-nerdtree-syntax-highlight' " Colors based on filetype
+		Plug 'tiagofumo/vim-nerdtree-syntax-highlight' " Colors based on filetype NOT WORKING!!!!!
 		Plug 'jiangmiao/auto-pairs' " Create the closing bracket automatically {}[]()
 		Plug 'scrooloose/syntastic' " Correct syntax error automatically when saving.
 		Plug 'tpope/vim-surround' " Delete, change, add surroundings easily.
@@ -334,6 +334,24 @@
 			" autocmd FileType nerdtree syntax clear NERDTreeFlags
 			" other nerdtree related autocmds
 		" augroup END 
+		 
+		" The following is an attempt to make colors in NERDTree, but is not working
+		" function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
+		" 	exec 'autocmd FileType nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
+		" 	exec 'autocmd FileType nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
+		" endfunction
+		" call NERDTreeHighlightFile('jade', 'green', 'none', 'green', '#151515')
+		" call NERDTreeHighlightFile('ini', 'yellow', 'none', 'yellow', '#151515')
+		" call NERDTreeHighlightFile('md', 'blue', 'none', '#3366FF', '#151515')
+		" call NERDTreeHighlightFile('yml', 'yellow', 'none', 'yellow', '#151515')
+		" call NERDTreeHighlightFile('conf', 'yellow', 'none', 'yellow', '#151515')
+		" call NERDTreeHighlightFile('json', 'yellow', 'none', 'yellow', '#151515')
+		" call NERDTreeHighlightFile('html', 'yellow', 'none', 'yellow', '#151515')
+		" call NERDTreeHighlightFile('styl', 'cyan', 'none', 'cyan', '#151515')
+		" call NERDTreeHighlightFile('css', 'cyan', 'none', 'cyan', '#151515')
+		" call NERDTreeHighlightFile('coffee', 'Red', 'none', 'red', '#151515')
+		" call NERDTreeHighlightFile('js', 'Red', 'none', '#ffa500', '#151515')
+		" call NERDTreeHighlightFile('php', 'Magenta', 'none', '#ff00ff', '#151515')
 	" }}}
 	" vim-devicons {{{
 		" Download the font DeJaVuSansMono Nerd Font, place it in ~/.local/share/fonts
@@ -342,13 +360,13 @@
 		set guifont=DejaVuSansMono\ Nerd\ Font\ Bold\ 9
 	" }}}
 	" vim-nerdtree-syntax-highlight {{{
-			" Disable highlighting
-			let g:NERDTreeDisableFileExtensionHighlight = 1
-			let g:NERDTreeDisableExactMatchHighlight = 1
-			let g:NERDTreeDisablePatternMatchHighlight = 1
+			" " Disable highlightng
+			" let g:NERDTreeDisableFileExtensionHighlight = 1
+			" let g:NERDTreeDisableExactMatchHighlight = 1
+			" let g:NERDTreeDisablePatternMatchHighlight = 1
 			
-			" Reduce number of extensions to check (reduces lag)
-			let g:NERDTreeLimitedSyntax = 1
+			" " Reduce number of extensions to check (reduces lag)
+			" let g:NERDTreeLimitedSyntax = 1
 	" }}}
 	" syntastic {{{
 		set statusline+=%#warningmsg#
@@ -551,7 +569,7 @@
 	" }}}
 	" vim-obsession {{{
 		" Start obsession on vim start
-		autocmd VimEnter * Obsession 'Session.vim'
+		autocmd VimEnter * Obsession Session.vim
 	" }}}
 	" emmet-vim {{{
 		" Tutorial: position the cursor after the html abbreviation, and press 
