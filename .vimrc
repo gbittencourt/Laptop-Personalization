@@ -155,7 +155,10 @@
 	" Use case insensitive search, except when using capital letters
 	set ignorecase
 	set smartcase
-" }}}
+
+	" Show total matches and current index in the command line bottom right.
+	set shortmess-=S
+	" }}}
 " Indentation {{{
 	" When opening a new line and no filetype-specific indenting is enabled, keep
 	" the same indent as the line you're currently on. Useful for READMEs, etc.
@@ -260,6 +263,7 @@
 		Plug 'tpope/vim-obsession' " Continuously updated session files
 		Plug 'mattn/emmet-vim' " Expand HTML abbreviations
 		Plug 'prettier/vim-prettier', {'do': 'yarn install' } " Make code prettier =]
+		Plug 'moll/vim-bbye' " Deleting a buffer without closing the window
 		call plug#end()
 	" }}}
 	" gruvbox {{{
@@ -270,10 +274,31 @@
 		colorscheme gruvbox
 	" }}}
 	" vim-airline {{{
-		" Display tab line
+		" Display tabline
 		let g:airline#extensions#tabline#enabled = 1 
 		let g:airline#extensions#tabline#left_sep = ' '
 		let g:airline#extensions#tabline#left_alt_sep = '|'
+		let g:airline#extensions#tabline#formatter = 'unique_tail'
+
+		" Tabs in the tabline:
+		let g:airline#extensions#tabline#show_tabs = 1 " Regardless of number of open tabs
+		let g:airline#extensions#tabline#show_tab_count = 2 " Always display tab number
+
+		" Buffers in the tabline:
+		let g:airline#extensions#tabline#buffer_idx_mode = 1 " Show indexes and map <leader># to go to #th buffer
+
+		nmap <leader>1 <Plug>AirlineSelectTab1
+		nmap <leader>2 <Plug>AirlineSelectTab2
+		nmap <leader>3 <Plug>AirlineSelectTab3
+		nmap <leader>4 <Plug>AirlineSelectTab4
+		nmap <leader>5 <Plug>AirlineSelectTab5
+		nmap <leader>6 <Plug>AirlineSelectTab6
+		nmap <leader>7 <Plug>AirlineSelectTab7
+		nmap <leader>8 <Plug>AirlineSelectTab8
+		nmap <leader>9 <Plug>AirlineSelectTab9
+		nmap <leader>- <Plug>AirlineSelectPrevTab
+		nmap <leader>+ <Plug>AirlineSelectNextTab
+
 
 		" vim-airline-theme
 		let g:airline_theme='badwolf' 
@@ -482,7 +507,7 @@
 		  if (index(['vim','help'], &filetype) >= 0)
 			execute 'h '.expand('<cword>')
 		  else
-			call CocAction('doHover')
+			call CocActionAsync('doHover')
 		  endif
 		endfunction
 
@@ -500,7 +525,7 @@
 		" augroup mygroup
 		"   autocmd!
 		"   " Setup formatexpr specified filetype(s).
-		"   autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+		"   autocmd FileType typescript,json setl formatexpr=CocActionAsync('formatSelected')
 		"   " Update signature help on jump placeholder.
 		"   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 		" augroup end
@@ -529,13 +554,13 @@
 		xmap <silent> <TAB> <Plug>(coc-range-select)
 
 		" Add `:Format` command to format current buffer.
-		command! -nargs=0 Format :call CocAction('format')
+		command! -nargs=0 Format :call CocActionAsync('format')
 
 		" Add `:Fold` command to fold current buffer.
-		command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+		command! -nargs=? Fold :call     CocActionAsync('fold', <f-args>)
 
 		" Add `:OR` command for organize imports of the current buffer.
-		command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+		command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
 
 		" Mappings using CoCList:
 		" Show all diagnostics.
@@ -570,6 +595,10 @@
 	" vim-obsession {{{
 		" Start obsession on vim start
 		autocmd VimEnter * Obsession Session.vim
+
+		" Set the vim terminal window to the saved size and position.
+		set sessionoptions+=resize
+		set sessionoptions+=winpos
 	" }}}
 	" emmet-vim {{{
 		" Tutorial: position the cursor after the html abbreviation, and press 
