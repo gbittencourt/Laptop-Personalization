@@ -264,6 +264,9 @@
 		Plug 'mattn/emmet-vim' " Expand HTML abbreviations
 		Plug 'prettier/vim-prettier', {'do': 'yarn install' } " Make code prettier =]
 		Plug 'moll/vim-bbye' " Deleting a buffer without closing the window
+		Plug 'tpope/vim-haml' " Vim runtime for Haml, Sass, ans SCSS
+		Plug 'terryma/vim-multiple-cursors' " Multiple cursors! 
+		Plug 'jeetsukumaran/vim-buffergator' " Easily browse through buffer list
 		call plug#end()
 	" }}}
 	" gruvbox {{{
@@ -309,6 +312,10 @@
 		endfunction
 		autocmd User AirlineAfterInit call AirlineInit()
 	" }}}
+	" vim-airline-clock {{{
+		" disable:
+		let g:airline#extensions#clock#auto = 0 
+	" }}}
 	" nerdtree {{{
 		" Open NERDTree if no file is given as CLI argument
 		autocmd StdinReadPre * let s:std_in=1
@@ -316,6 +323,9 @@
 
 		" Show hidden files
 		let g:NERDTreeShowHidden = 1
+
+		" Ignore swap files
+		let NERDTreeIgnore=['\.swp$[[file]]']
 
 		" Close the tree window automatically after opening a file
 		let g:NERDTreeQuitOnOpen = 3
@@ -352,6 +362,12 @@
 
 		" Close vim if NERDTree is the last open window.
 		autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+		" Do not open files/buffers on the NerdTree window: THIS SHIT BREAKS THE
+		" CALL TO "PlugClean / PlugInstall" WHEN WE CALL IT WITH THE CURSOR AT THE
+		" NERDTREE WINDOW!
+		" If more than one window and previous buffer was NERDTree, go back to it.
+		" autocmd BufEnter * if bufname('#') =~# "^NERD_tree_" && winnr('$') > 1 | b# | endif
 
 		" Config specific for NERDTree
 		" augroup nerdtree
@@ -453,7 +469,7 @@
 		set updatetime=300
 		 
 		" avoid update the screen before coc is ready
-		set lazyredraw
+		" set lazyredraw
 
 		" Don't pass messages to |ins-completion-menu|.
 		set shortmess+=c
@@ -618,4 +634,16 @@
 		" vim-prettier directory, and it started working.
 		 autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html Prettier
 	" }}}
-" }}} 
+	" vim-multiple-cursors {{{
+		" Remap the original bindings
+		let g:multi_cursor_use_default_mapping=0 
+		let g:multi_cursor_start_word_key      = '<C-c>'
+		let g:multi_cursor_select_all_word_key = '<A-c>'
+		let g:multi_cursor_start_key           = 'g<C-c>'
+		let g:multi_cursor_select_all_key      = 'g<A-c>'
+		let g:multi_cursor_next_key            = '<C-c>'
+		let g:multi_cursor_prev_key            = '<C-p>'
+		let g:multi_cursor_skip_key            = '<C-x>'
+		let g:multi_cursor_quit_key            = '<Esc>'
+	" }}}
+ " }}} 
