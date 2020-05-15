@@ -139,10 +139,10 @@
 	" noremap <silent> <leader>l <C-W><C-L>
 
 	" Map the leader arrows to resize the current window
-	nnoremap <silent> <leader><Left> :exe "vertical resize " . (winwidth(0) * 95/100)<CR>
-	nnoremap <silent> <leader><Down> :exe "resize " . (winheight(0) * 90/100)<CR>
-	nnoremap <silent> <leader><Up> :exe "resize " . (winheight(0) * 120/100)<CR>
-	nnoremap <silent> <leader><Right> :exe "vertical resize " . (winwidth(0) * 110/100)<CR>
+	noremap <silent> <C-W>< :exe "vertical resize " . (winwidth(0) * 95/100)<CR>
+	noremap <silent> <C-W>- :exe "resize " . (winheight(0) * 90/100)<CR>
+	noremap <silent> <C-W>+ :exe "resize " . (winheight(0) * 120/100)<CR>
+	noremap <silent> <C-W>> :exe "vertical resize " . (winwidth(0) * 110/100)<CR>
 
 	" Automatically resize splits when resizing window
 	autocmd VimResized * wincmd = 
@@ -189,10 +189,9 @@
 	" Map Y to act like D and C, i.e. to yank until EOL, rather than act as yy,
 	" which is the default
 	map Y y$
+	map L $
+	map H ^
 	
-	" Remap the <leader> to be the space " " instead of the default "\"
-	" map <space> <leader>
-
 	" Map <C-n> to open NERDTree
 	noremap <C-N> :NERDTreeToggle<Enter>
 	
@@ -265,7 +264,7 @@
 		Plug 'prettier/vim-prettier', {'do': 'yarn install' } " Make code prettier =]
 		Plug 'moll/vim-bbye' " Deleting a buffer without closing the window
 		Plug 'tpope/vim-haml' " Vim runtime for Haml, Sass, ans SCSS
-		Plug 'terryma/vim-multiple-cursors' " Multiple cursors! 
+		" Plug 'terryma/vim-multiple-cursors' " Multiple cursors
 		Plug 'jeetsukumaran/vim-buffergator' " Easily browse through buffer list
 		call plug#end()
 	" }}}
@@ -337,22 +336,25 @@
 		let g:WebDevIconsUnicodeDecorateFolderNodes=1
 		let g:NERDTreeGitStatusNodeColorization=1
 
-		" Sync open file with NERDTree
-		function! IsNERDTreeOpen()
-			return exists("t:NERDTreeBufName") && (bufwinnr(t:NERDTreeBufName) != -1)
-		endfunction
-
-		" Call NERDTree iff NERDTree is active, current window contains a 
-		" modifiable file, and we're not in vimdiff
-		function! SyncTree()
-			if &modifiable && IsNERDTreeOpen() && strlen(expand('%')) > 0 && !&diff
-				NERDTreeFind
-				wincmd p
-			endif
-		endfunction
-
-		" Highlight currently open buffer in NERDTree
-		autocmd BufEnter * call SyncTree()
+		" Sync open file with NERDTree {{{
+			" (THERE IS A BUG WHEN NERDTREE HAS NOT BEEN ALREADY LOADED, IT OPENS 2 
+			" INSTANCES... THAT'S WHY I DEACTIVATED...)
+			" function! IsNERDTreeOpen()
+			" 	return exists("t:NERDTreeBufName") && (bufwinnr(t:NERDTreeBufName) != -1)
+			" endfunction
+			"
+			" " Call NERDTree iff NERDTree is active, current window contains a 
+			" " modifiable file, and we're not in vimdiff
+			" function! SyncTree()
+			" 	if &modifiable && IsNERDTreeOpen() && strlen(expand('%')) > 0 && !&diff
+			" 		NERDTreeFind
+			" 		wincmd p
+			" 	endif
+			" endfunction
+			"
+			" Highlight currently open buffer in NERDTree 
+			" autocmd BufEnter * call SyncTree()
+		" }}}
 
 		" Always show cursorline in NERDTree
 		let g:NERDTreeHighlightCursorline=1
@@ -363,11 +365,10 @@
 		" Close vim if NERDTree is the last open window.
 		autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-		" Do not open files/buffers on the NerdTree window: THIS SHIT BREAKS THE
-		" CALL TO "PlugClean / PlugInstall" WHEN WE CALL IT WITH THE CURSOR AT THE
-		" NERDTREE WINDOW!
+		" Do not open files/buffers on the NerdTree window: 
 		" If more than one window and previous buffer was NERDTree, go back to it.
-		" autocmd BufEnter * if bufname('#') =~# "^NERD_tree_" && winnr('$') > 1 | b# | endif
+		autocmd BufEnter * if bufname('#') =~# "^NERD_tree_" && winnr('$') > 1 | b# | endif
+		let g:plug_window = 'noautocmd vertical topleft new' " Required to avoid crash on vim-plug calls when cursor is over NERDTree
 
 		" Config specific for NERDTree
 		" augroup nerdtree
@@ -635,15 +636,15 @@
 		 autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html Prettier
 	" }}}
 	" vim-multiple-cursors {{{
-		" Remap the original bindings
-		let g:multi_cursor_use_default_mapping=0 
-		let g:multi_cursor_start_word_key      = '<C-c>'
-		let g:multi_cursor_select_all_word_key = '<A-c>'
-		let g:multi_cursor_start_key           = 'g<C-c>'
-		let g:multi_cursor_select_all_key      = 'g<A-c>'
-		let g:multi_cursor_next_key            = '<C-c>'
-		let g:multi_cursor_prev_key            = '<C-p>'
-		let g:multi_cursor_skip_key            = '<C-x>'
-		let g:multi_cursor_quit_key            = '<Esc>'
+		" " Remap the original bindings
+		" let g:multi_cursor_use_default_mapping=0 
+		" let g:multi_cursor_start_word_key      = '<C-c>'
+		" let g:multi_cursor_select_all_word_key = 'c' " <A-c>
+		" let g:multi_cursor_start_key           = 'g<C-c>'
+		" let g:multi_cursor_select_all_key      = 'gc' " g<A-c>
+		" let g:multi_cursor_next_key            = '<C-c>'
+		" let g:multi_cursor_prev_key            = '<C-p>'
+		" let g:multi_cursor_skip_key            = '<C-x>'
+		" let g:multi_cursor_quit_key            = '<Esc>'
 	" }}}
  " }}} 
