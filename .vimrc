@@ -191,6 +191,13 @@
 	map Y y$
 	map L $
 	map H ^
+
+	" Disable <Backspace>, <C-Backspace> and <Return> in normal mode (by default
+	" they weirdely move the cursor)
+	nnoremap  <NOP>
+	nnoremap  <NOP>
+	nnoremap  <NOP>
+	nnoremap <Space><Space> <NOP>
 	
 	" Map <C-n> to open NERDTree
 	noremap <C-N> :NERDTreeToggle<Enter>
@@ -287,17 +294,26 @@
 		let g:airline#extensions#tabline#show_tab_count = 2 " Always display tab number
 
 		" Buffers in the tabline:
-		let g:airline#extensions#tabline#buffer_idx_mode = 1 " Show indexes and map <leader># to go to #th buffer
+		let g:airline#extensions#tabline#buffer_idx_mode = 3 " Show indexes and map <leader># to go to #th buffer
 
-		nmap <leader>1 <Plug>AirlineSelectTab1
-		nmap <leader>2 <Plug>AirlineSelectTab2
-		nmap <leader>3 <Plug>AirlineSelectTab3
-		nmap <leader>4 <Plug>AirlineSelectTab4
-		nmap <leader>5 <Plug>AirlineSelectTab5
-		nmap <leader>6 <Plug>AirlineSelectTab6
-		nmap <leader>7 <Plug>AirlineSelectTab7
-		nmap <leader>8 <Plug>AirlineSelectTab8
-		nmap <leader>9 <Plug>AirlineSelectTab9
+		nmap <leader>01 <Plug>AirlineSelectTab01
+		nmap <leader>02 <Plug>AirlineSelectTab02
+		nmap <leader>03 <Plug>AirlineSelectTab03
+		nmap <leader>04 <Plug>AirlineSelectTab04
+		nmap <leader>05 <Plug>AirlineSelectTab05
+		nmap <leader>06 <Plug>AirlineSelectTab06
+		nmap <leader>07 <Plug>AirlineSelectTab07
+		nmap <leader>08 <Plug>AirlineSelectTab08
+		nmap <leader>09 <Plug>AirlineSelectTab09
+		nmap <leader>11 <Plug>AirlineSelectTab11
+		nmap <leader>12 <Plug>AirlineSelectTab12
+		nmap <leader>13 <Plug>AirlineSelectTab13
+		nmap <leader>14 <Plug>AirlineSelectTab14
+		nmap <leader>15 <Plug>AirlineSelectTab15
+		nmap <leader>16 <Plug>AirlineSelectTab16
+		nmap <leader>17 <Plug>AirlineSelectTab17
+		nmap <leader>18 <Plug>AirlineSelectTab18
+		nmap <leader>19 <Plug>AirlineSelectTab19
 		nmap <leader>- <Plug>AirlineSelectPrevTab
 		nmap <leader>+ <Plug>AirlineSelectNextTab
 
@@ -328,7 +344,7 @@
 
 		" Close the tree window automatically after opening a file
 		let g:NERDTreeQuitOnOpen = 3
-		let g:NERDTreeWinSize = 25
+		let g:NERDTreeWinSize = 30
 		let g:NERDTreeWinSizeMax = 80
 
 		" Indicate changes in files that have a git version control
@@ -611,7 +627,16 @@
 	" }}}
 	" vim-obsession {{{
 		" Start obsession on vim start
-		autocmd VimEnter * Obsession Session.vim
+		" autocmd VimEnter * Obsession Session.vim
+		function! InitSession()
+			if empty(glob("./Session.vim"))
+				Obsession Session.vim
+			else
+				source ./Session.vim
+			endif
+		endfunction
+
+		autocmd VimEnter * call InitSession()
 
 		" Set the vim terminal window to the saved size and position.
 		set sessionoptions+=resize
