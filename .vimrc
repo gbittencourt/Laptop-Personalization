@@ -179,7 +179,7 @@
 	" not set, if softtabstop is less than tabstop, vim will use a combination of
 	" tabs and spaces to make up the desired spacing. When softtabstop equals
 	" tabstop, vim will use only tabs.
-	set softtabstop=2
+	" set softtabstop=2
 
 	" Set the representation of whatever key I want
 	set listchars=tab:\|\ 
@@ -273,6 +273,7 @@
 		Plug 'tpope/vim-haml' " Vim runtime for Haml, Sass, ans SCSS
 		" Plug 'terryma/vim-multiple-cursors' " Multiple cursors
 		Plug 'jeetsukumaran/vim-buffergator' " Easily browse through buffer list
+		Plug 'maxmellon/vim-jsx-pretty' " Syntax for jsx (for React development)
 		call plug#end()
 	" }}}
 	" gruvbox {{{
@@ -437,6 +438,8 @@
 		let g:syntastic_mode="passive"
 		" let g:syntastic_enable_signs=0
 		let g:syntastic_html_checkers=['w3']
+		let g:syntastic_javascript_checkers=['eslint']
+		let g:syntastic_typescript_checkers=['eslint']
 		let g:syntastic_python_checkers = ['pylint', 'python', 'flake8', 'pyflakes']
 		nnoremap <F7> :SyntasticCheck<CR> :lopen<CR>
 	" }}}
@@ -464,6 +467,7 @@
 		" Dically install desired extensions
 		let g:coc_global_extensions = [
 		\ 'coc-tsserver',
+		\ 'coc-tslint-plugin',
 		\ 'coc-vimlsp',
 		\ 'coc-eslint',
 		\ 'coc-spell-checker',
@@ -626,21 +630,13 @@
 		"	press <leader>ww
 	" }}}
 	" vim-obsession {{{
-		" Start obsession on vim start
-		" autocmd VimEnter * Obsession Session.vim
-		function! InitSession()
-			if empty(glob("./Session.vim"))
-				Obsession Session.vim
-			else
-				source ./Session.vim
-			endif
-		endfunction
-
-		autocmd VimEnter * call InitSession()
+		" If no session exists, create a new session automatically
+		autocmd VimEnter * if empty(glob("Session.vim")) | Obsession Session.vim | endif
 
 		" Set the vim terminal window to the saved size and position.
 		set sessionoptions+=resize
 		set sessionoptions+=winpos
+		set sessionoptions-=options
 	" }}}
 	" emmet-vim {{{
 		" Tutorial: position the cursor after the html abbreviation, and press 
