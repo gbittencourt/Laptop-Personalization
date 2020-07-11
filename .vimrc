@@ -428,6 +428,8 @@
 			" let g:NERDTreeLimitedSyntax = 1
 	" }}}
 	" syntastic {{{
+		" To add support for React (jsx, tsx), follow the instructions in: 
+		" https://github.com/jaxbot/syntastic-react
 		set statusline+=%#warningmsg#
 		set statusline+=%{SyntasticStatuslineFlag()}
 		set statusline+=%*
@@ -440,6 +442,7 @@
 		let g:syntastic_html_checkers=['w3']
 		let g:syntastic_javascript_checkers=['eslint']
 		let g:syntastic_typescript_checkers=['eslint']
+		let g:syntastic_python_python_exec = 'python3'
 		let g:syntastic_python_checkers = ['pylint', 'python', 'flake8', 'pyflakes']
 		nnoremap <F7> :SyntasticCheck<CR> :lopen<CR>
 	" }}}
