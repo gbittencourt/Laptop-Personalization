@@ -1,6 +1,13 @@
 // Change owner of a folder: sudo chwon <username> <folder>
-
 -----------------------------------------------------------------------
+
+better touchpad config:
+sudo apt install xserver-xorg-input-synaptics
+sudo apt install xserver-xorg-input-libinput
+sudo apt install xserver-xorg-input-evdev
+sudo apt install xserver-xorg-input-mouse
+-----------------------------------------------------------------------
+
 // To enable hibernation:
    1) Find the UUID of the swap partition inside the file /etc/fstab
    2) Open the grub file: sudo gedit /etc/default/grub
@@ -113,4 +120,11 @@ Setup vim:
 		curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 		    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 	Follow the instructions inside ~/.vimrc to manage plugins
+
+	To enable faster cursor movement, go to the OS keyboard config, and set 
+	"enable key repeat" with 250ms delay and repeat speed = 40 
+-------------------------------------------------------------------------
+
+Setup Thunderbird
+
 -------------------------------------------------------------------------
