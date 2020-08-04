@@ -274,6 +274,7 @@
 		" Plug 'terryma/vim-multiple-cursors' " Multiple cursors
 		Plug 'jeetsukumaran/vim-buffergator' " Easily browse through buffer list
 		Plug 'maxmellon/vim-jsx-pretty' " Syntax for jsx (for React development)
+		Plug 'lervag/vimtex' " filetype plugin for LaTeX files
 		call plug#end()
 	" }}}
 	" gruvbox {{{
